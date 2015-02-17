@@ -1,12 +1,6 @@
 FROM base/archlinux:latest
 MAINTAINER Benjamin Thuillier <benjaminthuillier@gmail.com>
 
-RUN mkdir /project
-
-ADD . /project
-
-WORKDIR /project
-
 RUN pacman --noconfirm -Sy ca-certificates openssl wget unzip; yes | pacman -Scc
 
 RUN wget -q -O /tmp/websocketd.zip \
@@ -16,4 +10,12 @@ RUN wget -q -O /tmp/websocketd.zip \
 
 EXPOSE 8080
 
-ENTRYPOINT websocketd --port=8080 --staticdir=. --devconsole count.sh
+RUN mkdir /project
+
+ADD ./count.sh /project/
+
+RUN chmod +x /project/count.sh
+
+WORKDIR /project
+
+ENTRYPOINT websocketd --port=8080 --devconsole /project/count.sh
